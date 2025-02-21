@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html
+xmlns:th="https://thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+	<meta charset="utf-8">
+</head>
+
+<body>
+	
+	<table>
+		<thead>
+			<tr>ID</tr>
+			<tr>Nome</tr>
+			<tr>Gmail</tr>
+			<tr>CPF</tr>
+			<tr>Grupo</tr>
+			<tr>Ação</tr>
+		</thead>
+		<tbody th:each="usuarios_admin: ${listaUsuarios}">
+			<tr>
+				<td th:text="${usuarios_admin.id}"></td>
+				<td th:text="${usuarios_admin.nome}"></td>
+				<td th:text="${usuarios_admin.gmail}"></td>
+				<td th:text="${usuarios_admin.cpf}"></td>
+				<td th:text="${usuarios_admin.grupo}"></td>
+				<td colspan="2">
+					<a th:href="@{/editarUsuarioAdmin/{id}(id=${usuario_admin.id})}">Editar</a>
+					<a th:href="@{/removerUsuarioAdmin/{id}(id=${usuario_admin.id})}">Excluir</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+</body>
+
+</html>
