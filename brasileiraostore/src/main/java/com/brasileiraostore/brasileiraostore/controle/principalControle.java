@@ -11,5 +11,4 @@ public class principalControle {
 		return "administrativo/home";
 	}
 	
-	
 }

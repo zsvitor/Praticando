@@ -2,6 +2,8 @@ package com.brasileiraostore.brasileiraostore.modelos;
 
 import java.io.Serializable;
 
+import org.hibernate.validator.constraints.br.CPF;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -17,9 +19,9 @@ public class UsuarioAdmin implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	@Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    
+ 
     private String nome;
     
     @Column(unique = true, nullable = false)
@@ -27,8 +29,7 @@ public class UsuarioAdmin implements Serializable {
     
     @Column(nullable = false)
     private String senha;
-    
-    @Column(unique = true, nullable = false, length = 14)
+   
     private String cpf;
     
     @Enumerated(EnumType.STRING)
@@ -40,7 +41,7 @@ public class UsuarioAdmin implements Serializable {
     private Status status = Status.ATIVO;
     
     public enum Grupo {
-        ADMINISTRADOR, ESTOQUISTA
+        ADMINISTRADOR, ESTOQUISTA  
     }
     
     public enum Status {
@@ -101,7 +102,6 @@ public class UsuarioAdmin implements Serializable {
 
 	public void setStatus(Status status) {
 		this.status = status;
-	}
-    
+	} 
 	
 }

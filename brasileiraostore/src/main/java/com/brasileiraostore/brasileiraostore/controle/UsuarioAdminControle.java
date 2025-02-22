@@ -6,10 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 import com.brasileiraostore.brasileiraostore.modelos.UsuarioAdmin;
+import com.brasileiraostore.brasileiraostore.modelos.UsuarioAdmin.Status;
 import com.brasileiraostore.brasileiraostore.repositorios.UsuarioAdminRepositorio;
 
 @Controller
@@ -35,7 +37,34 @@ public class UsuarioAdminControle {
 	@GetMapping("/editarUsuarioAdmin/{id}")
 	public ModelAndView editar(@PathVariable("id") Long id) {
 		Optional<UsuarioAdmin> usuarioadmin = usuarioRepositorio.findById(id);
-		return cadastrar(usuarioadmin.get());
+		ModelAndView mv = new ModelAndView("administrativo/administradores/alterar");
+        mv.addObject("usuarios_admin", usuarioadmin.get());
+        return mv;
+	}
+	
+	@PostMapping("/salvarEdicaoUsuarioAdmin")
+	public ModelAndView salvarEdicao(@ModelAttribute UsuarioAdmin usuarioadmin) {
+	    Optional<UsuarioAdmin> usuarioExistente = usuarioRepositorio.findById(usuarioadmin.getId());
+	    if (usuarioExistente.isPresent()) {
+	        UsuarioAdmin usuarioAtualizado = usuarioExistente.get();
+	        usuarioAtualizado.setNome(usuarioadmin.getNome());
+	        usuarioAtualizado.setGmail(usuarioadmin.getGmail());
+	        usuarioAtualizado.setCpf(usuarioadmin.getCpf());
+	        usuarioAtualizado.setGrupo(usuarioadmin.getGrupo());
+	        usuarioRepositorio.save(usuarioAtualizado);
+	    }
+	    return new ModelAndView("redirect:/listarUsuarioAdmin"); 
+	}
+
+	@GetMapping("/alterarStatusUsuarioAdmin/{id}")
+	public ModelAndView alterarStatus(@PathVariable("id") Long id) {
+	    Optional<UsuarioAdmin> usuarioOptional = usuarioRepositorio.findById(id);   
+	    if (usuarioOptional.isPresent()) {
+	        UsuarioAdmin usuario = usuarioOptional.get();
+	        usuario.setStatus(usuario.getStatus() == Status.ATIVO ? Status.INATIVO : Status.ATIVO);
+	        usuarioRepositorio.save(usuario);
+	    }
+	    return new ModelAndView("redirect:/listarUsuarioAdmin");
 	}
 	
 	@PostMapping("/salvarUsuarioAdmin")
