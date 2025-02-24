@@ -1,19 +1,15 @@
 package com.futstore.futstore.modelo;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
-import java.util.List;
-
 import org.hibernate.validator.constraints.br.CPF;
 
 @Entity
@@ -36,15 +32,12 @@ public class Usuario {
 
     @CPF(message = "CPF inválido")
     private String cpf;
+    
+    @Enumerated(EnumType.STRING)
+    @NotNull(message = "O papel do usuário deve ser informado")
+    private PapelUsuario papel;
 
     private boolean ativo;
-    
-    @ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name="usuario_papel",
-			   joinColumns = @JoinColumn(name = "usuario_id"),
-			   inverseJoinColumns = @JoinColumn(name = "papel_id"))
-	private List<Papel> papeis;
-
 
 	public Long getId() {
 		return id;
@@ -94,12 +87,11 @@ public class Usuario {
 		this.ativo = ativo;
 	}
 
-	public List<Papel> getPapeis() {
-		return papeis;
-	}
+	public PapelUsuario getPapel() {
+        return papel;
+    }
 
-	public void setPapeis(List<Papel> papeis) {
-		this.papeis = papeis;
-	}
-	
+    public void setPapel(PapelUsuario papel) {
+        this.papel = papel;
+    }
 }

@@ -25,6 +25,9 @@
 			<tr>
 				<th>Nome</th>
 				<th>Gmail</th>
+				<th>Grupo</th>
+				<th>Status</th>
+				<th>Ações</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -32,8 +35,10 @@
 				<td colspan="2">Sem usuários</td>
 			</tr>
 			<tr th:each="usuario : ${usuarios}">
-				<td><span th:text="${usuario.nome}"> Nome </span></td>
-				<td><span th:text="${usuario.gmail}"> Gmail </span></td>
+				<td><span th:text="${usuario.nome}">Nome</span></td>
+				<td><span th:text="${usuario.gmail}">Gmail</span></td>
+				<td><span th:text="${usuario.papel}">Grupo</span></td>
+				<td><span th:text="${usuario.ativo ? 'Ativo' : 'Inativo'}"></span></td>
 				<td>
 				    <a class="btn btn-outline-danger btn-sm" 
 				       th:href="@{/usuario/administrador/trocar-status/{id}(id=${usuario.id})}"
@@ -41,8 +46,6 @@
 				       onclick="if (!confirm(this.getAttribute('data-confirm-toggle'))) return false">
 				       <span th:text="${usuario.ativo} ? 'Inativar' : 'Ativar'"></span>
 				    </a>
-				</td>
-				<td>
 					<a class="btn btn-outline-primary btn-sm" th:href="@{/usuario/editar/{id}(id=${usuario.id})}">Editar</a>
 				</td>
 			</tr>
