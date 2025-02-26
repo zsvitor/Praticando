@@ -14,6 +14,7 @@
 </head>
 
 <body>
+
     <div th:replace="fragments/publica-nav :: nav"></div>
     <div class="main-content" style="margin-top: 50px;">
         <div class="container">
@@ -21,7 +22,7 @@
                 <div class="col-md-8 mx-auto">
                     <div class="card border-0 shadow-sm">
                         <div class="card-header bg-primary text-white py-3">
-                            <h2 class="card-title mb-0"><i class="fas fa-user-edit me-2"></i>Alterar Usuário</h2>
+                            <h2 class="card-title mb-0"><i class="fas fa-user-plus me-2"></i>Cadastro de Usuário</h2>
                         </div>
                         <div class="card-body p-4">
                             <div class="alert alert-success alert-dismissible fade show" th:if="${mensagem}">
@@ -29,8 +30,7 @@
                                 <i class="fas fa-check-circle me-2"></i><span th:text="${mensagem}"></span>
                             </div>
 
-                            <form th:action="@{/usuario/editar/{id}(id=${usuario.id})}" th:object="${usuario}"
-                                method="post">
+                            <form action="#" th:action="@{/usuario/salvar}" th:object="${usuario}" method="post">
                                 <div class="row mb-4">
                                     <label class="col-sm-3 col-form-label">
                                         <i class="fas fa-user me-2"></i>Nome:
@@ -52,6 +52,18 @@
                                             maxlength="14" placeholder="000.000.000-00">
                                         <span class="mensagem text-danger" th:if="${#fields.hasErrors('cpf')}"
                                             th:errors="*{cpf}"></span>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-4">
+                                    <label class="col-sm-3 col-form-label">
+                                        <i class="fas fa-envelope me-2"></i>Gmail:
+                                    </label>
+                                    <div class="col-sm-9">
+                                        <input class="form-control" type="email" th:field="*{gmail}"
+                                            placeholder="exemplo@gmail.com">
+                                        <span class="mensagem text-danger" th:if="${#fields.hasErrors('gmail')}"
+                                            th:errors="*{gmail}"></span>
                                     </div>
                                 </div>
 
@@ -107,7 +119,7 @@
                                         <i class="fas fa-times me-2"></i>Cancelar
                                     </a>
                                     <button class="btn btn-primary" type="submit" onclick="return validarSenha()">
-                                        <i class="fas fa-save me-2"></i>Salvar Alterações
+                                        <i class="fas fa-save me-2"></i>Salvar
                                     </button>
                                 </div>
                             </form>
@@ -158,7 +170,9 @@
                 cpfInput.addEventListener('input', function (e) {
                     let value = e.target.value;
 
+
                     value = value.replace(/\D/g, '');
+
 
                     if (value.length > 0) {
                         value = value.replace(/^(\d{3})(\d)/, '$1.$2');
@@ -180,6 +194,36 @@
             }
         });
     </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const cpfInput = document.getElementById('cpfInput');
+
+            cpfInput.addEventListener('input', function (e) {
+                let value = e.target.value;
+
+                value = value.replace(/\D/g, '');
+
+                if (value.length > 0) {
+                    value = value.replace(/^(\d{3})(\d)/, '$1.$2');
+                }
+                if (value.length > 3) {
+                    value = value.replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3');
+                }
+                if (value.length > 6) {
+                    value = value.replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d)/, '$1.$2.$3-$4');
+                }
+
+                e.target.value = value;
+            });
+
+            if (cpfInput.value) {
+                const event = new Event('input', { bubbles: true });
+                cpfInput.dispatchEvent(event);
+            }
+        });
+    </script>
+
 </body>
 
 </html>
