@@ -11,7 +11,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.util.Optional;
 
 @Controller
@@ -83,6 +82,31 @@ public class ProdutoController {
         model.addAttribute("totalPaginas", produtosPage.getTotalPages());
         model.addAttribute("filtroNome", filtroNome);    
         return "/auth/estoquista/estoq-listar-produto";
+    }
+    
+    @GetMapping("/estoquista/editar-estoque/{id}")
+    public String editarEstoque(@PathVariable("id") Long id, Model model) {
+        Optional<Produto> produtoOptional = produtoRepository.findById(id);
+        if (!produtoOptional.isPresent()) {
+            throw new IllegalArgumentException("Produto inválido: " + id);
+        }        
+        model.addAttribute("produto", produtoOptional.get());
+        return "/auth/estoquista/estoq-alterar-produto";
+    }
+
+    @PostMapping("/estoquista/atualizar-estoque/{id}")
+    public String atualizarEstoque(@PathVariable("id") Long id, @Valid Produto produto, BindingResult result, RedirectAttributes attributes) {
+        if (result.hasErrors()) {
+            produto.setId(id);
+            return "/auth/estoquista/estoq-alterar-produto";
+        }
+        Optional<Produto> produtoAtual = produtoRepository.findById(id);
+        if (produtoAtual.isPresent()) {
+            Produto produtoExistente = produtoAtual.get();
+            produtoExistente.setQuantidadeEstoque(produto.getQuantidadeEstoque());
+            produtoRepository.save(produtoExistente);
+        }      
+        return "redirect:/produto/estoquista/listar";
     }
     
 }
