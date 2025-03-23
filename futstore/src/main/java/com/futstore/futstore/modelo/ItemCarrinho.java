@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 public class ItemCarrinho implements Serializable {
-	
+
 	private static final long serialVersionUID = 1L;
 
 	private Produto produto;
