@@ -20,15 +20,26 @@ public class WebSecurityConfig {
 	@Autowired
 	private UsuarioDetailsService usuarioDetailsService;
 
+	@Autowired
+	private ClienteDetailsService clienteDetailsService;
+
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 
 	@Bean
-	public DaoAuthenticationProvider authenticationProvider() {
+	public DaoAuthenticationProvider adminAuthenticationProvider() {
 		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
 		authProvider.setUserDetailsService(usuarioDetailsService);
+		authProvider.setPasswordEncoder(passwordEncoder());
+		return authProvider;
+	}
+
+	@Bean
+	public DaoAuthenticationProvider clienteAuthenticationProvider() {
+		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+		authProvider.setUserDetailsService(clienteDetailsService);
 		authProvider.setPasswordEncoder(passwordEncoder());
 		return authProvider;
 	}
@@ -41,19 +52,25 @@ public class WebSecurityConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests(authorize -> authorize
-				.requestMatchers("/", "/home", "/cliente/**", "/css/**", "/js/**", "/bootstrap-5.1.3-dist/**",
-						"/jquery-3.6.0-dist/**", "/fragments/**", "/uploads/**", "/produto/detalhe/**", "/carrinho/**",
-						"/carrinho", "/carrinho/adicionar", "/carrinho/atualizar", "/carrinho/remover/**")
+				.requestMatchers("/", "/home", "/css/**", "/js/**", "/bootstrap-5.1.3-dist/**", "/jquery-3.6.0-dist/**",
+						"/fragments/**", "/uploads/**", "/imagens/**", "/produto/detalhe/**", "/carrinho/**",
+						"/carrinho", "/carrinho/adicionar", "/carrinho/atualizar", "/carrinho/remover/**",
+						"/cliente/cadastro", "/cliente/buscar-cep/**")
 				.permitAll()
-				.requestMatchers("/administrativo/login", "/usuario/novo", "/usuario/salvar", "/acesso-negado")
+				.requestMatchers("/administrativo/login", "/usuario/novo", "/usuario/salvar", "/acesso-negado",
+						"/cliente/login", "/cliente/cadastro" ,"/cliente/login-success")
 				.permitAll().requestMatchers("/auth/administrador/**").hasRole("ADMINISTRADOR")
 				.requestMatchers("/auth/estoquista/**").hasRole("ESTOQUISTA").requestMatchers("/estoque/**")
-				.hasAnyRole("ESTOQUISTA", "ADMINISTRADOR").anyRequest().authenticated())
-				.formLogin(form -> form.loginPage("/administrativo/login")
+				.hasAnyRole("ESTOQUISTA", "ADMINISTRADOR").requestMatchers("/auth/cliente/**").hasRole("CLIENTE")
+				.anyRequest().authenticated())
+				.formLogin(form -> form.loginPage("/administrativo/login").loginProcessingUrl("/administrativo/login")
 						.defaultSuccessUrl("/administrativo/login-success", true)
 						.failureUrl("/administrativo/login?error=true").permitAll())
+				.formLogin(form -> form.loginPage("/cliente/login").loginProcessingUrl("/cliente/login")
+						.defaultSuccessUrl("/cliente/login-success", true).failureUrl("/cliente/login?error=true")
+						.permitAll())
 				.logout(logout -> logout.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-						.logoutSuccessUrl("/login?logout").permitAll())
+						.logoutSuccessUrl("/").permitAll())
 				.exceptionHandling(ex -> ex.accessDeniedPage("/acesso-negado"));
 		return http.build();
 	}
