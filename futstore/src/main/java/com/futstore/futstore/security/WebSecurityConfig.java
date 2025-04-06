@@ -1,6 +1,7 @@
 package com.futstore.futstore.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,7 +22,7 @@ public class WebSecurityConfig {
 	private UsuarioDetailsService usuarioDetailsService;
 
 	@Autowired
-	private ClienteDetailsService clienteDetailsService;
+	private ClienteLoginFilter clienteLoginFilter;
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -29,17 +30,9 @@ public class WebSecurityConfig {
 	}
 
 	@Bean
-	public DaoAuthenticationProvider adminAuthenticationProvider() {
+	public DaoAuthenticationProvider authenticationProvider() {
 		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
 		authProvider.setUserDetailsService(usuarioDetailsService);
-		authProvider.setPasswordEncoder(passwordEncoder());
-		return authProvider;
-	}
-
-	@Bean
-	public DaoAuthenticationProvider clienteAuthenticationProvider() {
-		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-		authProvider.setUserDetailsService(clienteDetailsService);
 		authProvider.setPasswordEncoder(passwordEncoder());
 		return authProvider;
 	}
@@ -50,29 +43,35 @@ public class WebSecurityConfig {
 	}
 
 	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http.authorizeHttpRequests(authorize -> authorize
-				.requestMatchers("/", "/home", "/css/**", "/js/**", "/bootstrap-5.1.3-dist/**", "/jquery-3.6.0-dist/**",
-						"/fragments/**", "/uploads/**", "/imagens/**", "/produto/detalhe/**", "/carrinho/**",
-						"/carrinho", "/carrinho/adicionar", "/carrinho/atualizar", "/carrinho/remover/**",
-						"/cliente/cadastro", "/cliente/buscar-cep/**")
-				.permitAll()
-				.requestMatchers("/administrativo/login", "/usuario/novo", "/usuario/salvar", "/acesso-negado",
-						"/cliente/login", "/cliente/cadastro" ,"/cliente/login-success")
-				.permitAll().requestMatchers("/auth/administrador/**").hasRole("ADMINISTRADOR")
-				.requestMatchers("/auth/estoquista/**").hasRole("ESTOQUISTA").requestMatchers("/estoque/**")
-				.hasAnyRole("ESTOQUISTA", "ADMINISTRADOR").requestMatchers("/auth/cliente/**").hasRole("CLIENTE")
-				.anyRequest().authenticated())
-				.formLogin(form -> form.loginPage("/administrativo/login").loginProcessingUrl("/administrativo/login")
-						.defaultSuccessUrl("/administrativo/login-success", true)
-						.failureUrl("/administrativo/login?error=true").permitAll())
-				.formLogin(form -> form.loginPage("/cliente/login").loginProcessingUrl("/cliente/login")
-						.defaultSuccessUrl("/cliente/login-success", true).failureUrl("/cliente/login?error=true")
-						.permitAll())
-				.logout(logout -> logout.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-						.logoutSuccessUrl("/").permitAll())
-				.exceptionHandling(ex -> ex.accessDeniedPage("/acesso-negado"));
-		return http.build();
+	public FilterRegistrationBean<ClienteLoginFilter> clienteLoginFilterRegistration() {
+		FilterRegistrationBean<ClienteLoginFilter> registration = new FilterRegistrationBean<>();
+		registration.setFilter(clienteLoginFilter);
+		registration.addUrlPatterns("/cliente/*", "/carrinho/*", "/produto/detalhe/*", "/home", "/");
+		registration.setName("clienteLoginFilter");
+		registration.setOrder(1);
+		return registration;
 	}
 
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		http.authorizeHttpRequests(authorize -> authorize
+				.requestMatchers("/", "/home", "/cliente/**", "/css/**", "/js/**", "/bootstrap-5.1.3-dist/**",
+						"/jquery-3.6.0-dist/**", "/fragments/**", "/uploads/**", "/imagens/**", "/produto/detalhe/**",
+						"/carrinho/**", "/carrinho", "/carrinho/adicionar", "/carrinho/atualizar",
+						"/carrinho/remover/**")
+				.permitAll()
+				.requestMatchers("/administrativo/login", "/usuario/novo", "/usuario/salvar", "/acesso-negado")
+				.permitAll().requestMatchers("/auth/administrador/**").hasRole("ADMINISTRADOR")
+				.requestMatchers("/auth/estoquista/**").hasRole("ESTOQUISTA").requestMatchers("/estoque/**")
+				.hasAnyRole("ESTOQUISTA", "ADMINISTRADOR").anyRequest().authenticated())
+				.formLogin(form -> form.loginPage("/administrativo/login")
+						.loginProcessingUrl("/administrativo/login-process")
+						.defaultSuccessUrl("/administrativo/login-success", true)
+						.failureUrl("/administrativo/login?error=true").permitAll())
+				.logout(logout -> logout.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+						.logoutSuccessUrl("/").invalidateHttpSession(true).clearAuthentication(true).permitAll())
+				.exceptionHandling(ex -> ex.accessDeniedPage("/acesso-negado")).csrf(csrf -> csrf.disable());
+		return http.build();
+	}
+	
 }

@@ -1,120 +1,124 @@
 package com.futstore.futstore.modelo;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 @Entity
 public class Endereco {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@NotBlank(message = "O CEP deve ser informado")
-	@Pattern(regexp = "^\\d{5}-\\d{3}$|^\\d{8}$", message = "Formato de CEP inválido")
-	private String cep;
+    @NotEmpty(message = "O CEP deve ser informado")
+    @Pattern(regexp = "\\d{5}-\\d{3}", message = "CEP inválido. Use o formato: 00000-000")
+    private String cep;
 
-	@NotBlank(message = "O logradouro deve ser informado")
-	private String logradouro;
+    @NotEmpty(message = "O logradouro deve ser informado")
+    private String logradouro;
 
-	@NotNull(message = "O número deve ser informado")
-	private String numero;
+    @NotEmpty(message = "O número deve ser informado")
+    private String numero;
 
-	private String complemento;
+    private String complemento;
 
-	@NotBlank(message = "O bairro deve ser informado")
-	private String bairro;
+    @NotEmpty(message = "O bairro deve ser informado")
+    private String bairro;
 
-	@NotBlank(message = "A cidade deve ser informada")
-	private String cidade;
+    @NotEmpty(message = "A cidade deve ser informada")
+    private String cidade;
 
-	@NotBlank(message = "A UF deve ser informada")
-	@Size(min = 2, max = 2, message = "UF deve ter 2 caracteres")
-	private String uf;
+    @NotEmpty(message = "A UF deve ser informada")
+    @Size(min = 2, max = 2, message = "UF deve ter 2 caracteres")
+    private String uf;
+    
+    private String descricao;
+    
+    private boolean principal;
 
-	private String nome;
+    public Long getId() {
+        return id;
+    }
 
-	private boolean principal = false;
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	// Getters e Setters
-	public Long getId() {
-		return id;
-	}
+    public String getCep() {
+        return cep;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setCep(String cep) {
+        this.cep = cep;
+    }
 
-	public String getCep() {
-		return cep;
-	}
+    public String getLogradouro() {
+        return logradouro;
+    }
 
-	public void setCep(String cep) {
-		this.cep = cep;
-	}
+    public void setLogradouro(String logradouro) {
+        this.logradouro = logradouro;
+    }
 
-	public String getLogradouro() {
-		return logradouro;
-	}
+    public String getNumero() {
+        return numero;
+    }
 
-	public void setLogradouro(String logradouro) {
-		this.logradouro = logradouro;
-	}
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
 
-	public String getNumero() {
-		return numero;
-	}
+    public String getComplemento() {
+        return complemento;
+    }
 
-	public void setNumero(String numero) {
-		this.numero = numero;
-	}
+    public void setComplemento(String complemento) {
+        this.complemento = complemento;
+    }
 
-	public String getComplemento() {
-		return complemento;
-	}
+    public String getBairro() {
+        return bairro;
+    }
 
-	public void setComplemento(String complemento) {
-		this.complemento = complemento;
-	}
+    public void setBairro(String bairro) {
+        this.bairro = bairro;
+    }
 
-	public String getBairro() {
-		return bairro;
-	}
+    public String getCidade() {
+        return cidade;
+    }
 
-	public void setBairro(String bairro) {
-		this.bairro = bairro;
-	}
+    public void setCidade(String cidade) {
+        this.cidade = cidade;
+    }
 
-	public String getCidade() {
-		return cidade;
-	}
+    public String getUf() {
+        return uf;
+    }
 
-	public void setCidade(String cidade) {
-		this.cidade = cidade;
-	}
+    public void setUf(String uf) {
+        this.uf = uf;
+    }
 
-	public String getUf() {
-		return uf;
-	}
+    public String getDescricao() {
+        return descricao;
+    }
 
-	public void setUf(String uf) {
-		this.uf = uf;
-	}
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
 
-	public String getNome() {
-		return nome;
-	}
+    public boolean isPrincipal() {
+        return principal;
+    }
 
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
-
-	public boolean isPrincipal() {
-		return principal;
-	}
-
-	public void setPrincipal(boolean principal) {
-		this.principal = principal;
-	}
-	
+    public void setPrincipal(boolean principal) {
+        this.principal = principal;
+    }
+    
 }
